@@ -17,7 +17,10 @@ You will receive:
 - **Plan section**: `plan.json.areas.infra` with your tasks
 - **Checklist**: `checklist.json` with acceptance criteria
 - **Tech stack info**: From `plan.json.tech_stack`
+- **Test plan**: `test-plan.json` (optional) - shows what tests will verify your infrastructure changes
 - **Workspace path**: `.claude/feature-dev/<feature-id>/`
+
+**Note**: You do NOT write tests. The **test-writer agent** handles all testing. Your job is to implement infrastructure changes that support testable features.
 
 ## Your Responsibilities
 

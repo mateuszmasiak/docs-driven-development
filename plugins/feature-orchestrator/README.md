@@ -9,11 +9,13 @@ This plugin provides a multi-agent workflow that:
 1. **Clarifies & Specifies**: Turns your feature idea into structured specs with acceptance criteria
 2. **Enriches with Docs**: Searches your project documentation for compliance, security, and architectural requirements
 3. **Plans Intelligently**: Detects your tech stack and creates a detailed, pattern-aware implementation plan
-4. **Implements Consistently**: Delegates to specialized agents that write code following YOUR existing patterns
-5. **Tests Thoroughly**: Creates unit, integration, and E2E tests alongside implementation
-6. **Verifies Automatically**: Runs Playwright E2E tests to verify all acceptance criteria
-7. **Iterates on Feedback**: If tests fail, provides targeted feedback and re-implements until they pass
-8. **Generates Artifacts**: Produces implementation reports, PR templates, and commit messages
+4. **Designs Tests First**: Creates comprehensive test plans BEFORE implementation begins
+5. **Implements Consistently**: Delegates to specialized agents that write code following YOUR existing patterns
+6. **Writes All Tests**: Dedicated test-writer agent creates E2E, unit, and integration tests
+7. **Validates Coverage**: Enforces 100% acceptance criteria coverage before verification
+8. **Verifies Automatically**: Runs Playwright E2E tests to verify all acceptance criteria
+9. **Iterates on Feedback**: If tests fail, provides targeted feedback and re-implements until they pass
+10. **Generates Artifacts**: Produces implementation reports, PR templates, and commit messages
 
 ## Key Features
 
@@ -42,7 +44,9 @@ The plugin:
 
 ### Test-First Approach
 
-- Writes tests alongside implementation
+- **Test Ideation Phase**: Designs all tests BEFORE implementation
+- **Dedicated Test Writer**: Single agent responsible for all test creation
+- **100% Coverage Gate**: Cannot proceed to verification without full AC coverage
 - Uses Playwright for E2E verification
 - Correlates test results back to acceptance criteria
 - Iterates until all critical tests pass
@@ -173,16 +177,17 @@ Parameters:
 
 ### Multi-Agent Architecture
 
-The plugin uses 8 specialized agents:
+The plugin uses 9 specialized agents:
 
 1. **feature-orchestrator**: Main coordinator
 2. **spec-writer**: Converts ideas to specs
 3. **docs-auditor**: Enriches specs with documentation
 4. **planner**: Detects stack and creates plans
-5. **backend-dev**: Implements backend changes
-6. **frontend-dev**: Implements frontend changes
-7. **infra-dev**: Handles infrastructure changes
-8. **playwright-tester**: Runs and analyzes E2E tests
+5. **test-writer**: Designs and writes all tests (NEW)
+6. **backend-dev**: Implements backend changes
+7. **frontend-dev**: Implements frontend changes
+8. **infra-dev**: Handles infrastructure changes
+9. **playwright-tester**: Runs and analyzes E2E tests
 
 ### Skills
 
@@ -221,31 +226,66 @@ The plugin includes MCP servers for:
 - Creates detailed `plan.json` with tasks by area
 - Identifies dependencies and risks
 
-### Phase 4: Implementation (10-60 min)
+### Phase 3.5: Test Ideation (NEW) (3-8 min)
 
-- Backend, frontend, and infra agents work in parallel
-- Each agent follows existing patterns
-- Writes tests alongside code
-- Produces coverage reports
+- **Test-writer agent** designs comprehensive test strategy
+- Creates test cases for ALL acceptance criteria
+- Plans E2E, unit, and integration tests
+- Produces `test-plan.json` with detailed test scenarios
+- Ensures 100% AC coverage before implementation begins
 
-### Phase 5: Verification (5-15 min)
+### Phase 4: Implementation (0-60 min)
 
+- **First, agents check what already exists** (NEW)
+- Agents scan codebase for existing code that satisfies ACs
+- Only implement what's missing, skip what already works
+- Produces coverage reports with status:
+  - `already_implemented` - Found existing code
+  - `implemented` - Newly written code
+  - `partially_implemented` - Extended existing code
+- **If everything already exists**: Skip to test writing (0 min)
+
+### Phase 4.5: Test Implementation (NEW) (5-15 min)
+
+- **Test-writer agent** writes all tests based on test plan
+- Creates E2E tests with Playwright
+- Creates unit tests (Vitest/Jest)
+- Creates integration tests
+- All tests tagged with feature ID and AC IDs
+- Produces `test-coverage.json`
+
+### Phase 5: Coverage Validation (NEW) (1-2 min)
+
+- **MANDATORY GATE**: Cannot proceed without 100% coverage
+- Validates every AC has at least one test
+- Checks all E2E-marked ACs have E2E tests
+- If gaps exist: routes back to appropriate agent
+- Ensures comprehensive verification before running tests
+
+### Phase 6: E2E Verification (5-15 min)
+
+- **ALWAYS runs, even if all code was pre-existing** (NEW)
 - Runs E2E tests tagged with feature ID
 - Runs unit and integration tests
 - Correlates results to acceptance criteria
 - Generates detailed test report
+- Verifies existing code actually works correctly
 
-### Phase 6: Feedback Loop (as needed)
+### Phase 7: Feedback Loop (as needed)
 
 - If tests fail: analyzes failures
-- Provides targeted feedback to relevant agents
+- Routes to appropriate agent:
+  - Frontend issues → frontend-dev
+  - Backend issues → backend-dev
+  - **Test issues → test-writer** (NEW)
+  - Infrastructure issues → infra-dev
 - Agents make focused fixes
 - Re-runs tests
-- Repeats until success
+- Repeats until success (max 5 iterations)
 
-### Phase 7: Finalization
+### Phase 8: Finalization
 
-- Generates orchestrator report
+- Generates orchestrator report with test coverage summary
 - Creates PR template and commit message
 - Saves all artifacts
 
@@ -316,9 +356,11 @@ All artifacts are saved to `.claude/feature-dev/<feature-id>/`:
 | `checklist.json` | Acceptance criteria checklist |
 | `plan.json` | Implementation plan |
 | `plan-summary.md` | Plan overview |
+| `test-plan.json` | Test strategy and scenarios (NEW) |
 | `backend-coverage.json` | Backend implementation report |
 | `frontend-coverage.json` | Frontend implementation report |
 | `infra-coverage.json` | Infrastructure changes report |
+| `test-coverage.json` | Test coverage report (NEW) |
 | `playwright-results.json` | E2E test results |
 | `orchestrator-report.md` | Final summary |
 | `playwright-report/` | HTML test report |
@@ -435,17 +477,24 @@ You: yes
 Orchestrator: Planning... Done.
   - Detected: React + Express + Prisma
   - 2 backend tasks, 1 frontend task
-  - 4 E2E tests needed
 
 Approve plan?
 
 You: yes
 
-Orchestrator: Implementing... [15 minutes]
-  ✓ Backend complete (8 unit tests passing)
-  ✓ Frontend complete (4 E2E tests written)
+Orchestrator: Designing tests... Done.
+  - 18 test cases planned (7 E2E, 7 unit, 4 integration)
+  - 100% acceptance criteria coverage
 
-Running tests... [3 minutes]
+Orchestrator: Implementing... [15 minutes]
+  ✓ Backend complete
+  ✓ Frontend complete
+
+Orchestrator: Writing tests... [5 minutes]
+  ✓ All tests written
+  ✓ Coverage validated: 100%
+
+Running E2E verification... [3 minutes]
   ✓ All tests passed!
 
 Feature complete! See .claude/feature-dev/feat-reset-2fa-20250104/
@@ -464,17 +513,25 @@ Updated spec with 12 acceptance criteria.
 
 [... spec and plan review ...]
 
+Orchestrator: Designing tests... Done.
+  - 24 test cases planned
+  - 100% acceptance criteria coverage
+
 Implementing... [25 minutes]
   ✓ Backend complete
   ✓ Frontend complete
 
-Running tests... [5 minutes]
+Writing tests... [8 minutes]
+  ✓ All tests written
+  ✓ Coverage validated: 100%
+
+Running E2E verification... [5 minutes]
   ✗ 2 tests failed:
     - AC3: Export file not encrypted
     - AC7: Audit log missing timestamp
 
 Analyzing failures...
-  - Backend issue in export service
+  - Backend issue in export service → routing to backend-dev
   - Missing encryption wrapper
 
 Re-implementing fixes... [8 minutes]

@@ -371,9 +371,17 @@ Rate each task:
 ### 5. Test-Driven Planning
 
 For EVERY task, specify:
-- What tests should be written
-- Which test framework to use (based on detection)
-- How tests should be tagged for correlation with checklist
+- What should be tested (behaviors, not implementation details)
+- Which test framework applies (based on detection)
+- Suggested test types (E2E, unit, integration)
+
+**Note**: The **test-writer agent** will use this information to design detailed test cases. Your role is to identify WHAT needs testing, not HOW to write the tests.
+
+For each task's `test_requirements`, include:
+- Behaviors that should be verified
+- Edge cases that need coverage
+- Dependencies that should be mocked (for unit tests)
+- User flows that need E2E testing
 
 ## Edge Cases
 
