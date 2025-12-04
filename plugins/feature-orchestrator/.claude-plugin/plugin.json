@@ -1,0 +1,88 @@
+{
+  "name": "@feature-orchestrator/plugin",
+  "version": "1.0.0",
+  "description": "Stack-agnostic feature development orchestrator with multi-agent workflow, spec-driven development, and automated E2E verification via Playwright",
+  "author": "Feature Orchestrator Team",
+  "license": "MIT",
+  "capabilities": {
+    "commands": true,
+    "agents": true,
+    "skills": true,
+    "hooks": true,
+    "mcp": true
+  },
+  "commands": [
+    {
+      "name": "feature-orchestrator",
+      "path": "commands/feature-orchestrator.md",
+      "description": "Launch the feature development orchestrator workflow"
+    }
+  ],
+  "agents": [
+    {
+      "name": "feature-orchestrator",
+      "path": "agents/feature-orchestrator.md",
+      "description": "Main orchestrator agent coordinating the entire feature development workflow"
+    },
+    {
+      "name": "spec-writer",
+      "path": "agents/spec-writer.md",
+      "description": "Converts feature requests into structured specifications and acceptance criteria"
+    },
+    {
+      "name": "docs-auditor",
+      "path": "agents/docs-auditor.md",
+      "description": "Audits documentation and builds comprehensive acceptance checklists"
+    },
+    {
+      "name": "planner",
+      "path": "agents/planner.md",
+      "description": "Detects tech stack and creates implementation plans"
+    },
+    {
+      "name": "backend-dev",
+      "path": "agents/backend-dev.md",
+      "description": "Implements backend changes following existing patterns"
+    },
+    {
+      "name": "frontend-dev",
+      "path": "agents/frontend-dev.md",
+      "description": "Implements frontend changes following existing patterns"
+    },
+    {
+      "name": "infra-dev",
+      "path": "agents/infra-dev.md",
+      "description": "Implements infrastructure and configuration changes"
+    },
+    {
+      "name": "playwright-tester",
+      "path": "agents/playwright-tester.md",
+      "description": "Runs E2E tests via Playwright and correlates results with acceptance criteria"
+    }
+  ],
+  "skills": [
+    {
+      "name": "playwright-runner",
+      "path": "skills/playwright-runner/SKILL.md",
+      "description": "High-level interface for running Playwright E2E tests with feature tagging"
+    },
+    {
+      "name": "docs-reader",
+      "path": "skills/docs-reader/SKILL.md",
+      "description": "Reads and searches project documentation and specifications"
+    }
+  ],
+  "hooks": {
+    "path": "hooks/hooks.json"
+  },
+  "keywords": [
+    "feature-development",
+    "orchestration",
+    "multi-agent",
+    "playwright",
+    "e2e-testing",
+    "spec-driven",
+    "acceptance-criteria",
+    "stack-agnostic"
+  ]
+}

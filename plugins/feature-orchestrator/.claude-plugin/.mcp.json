@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "playwright-orchestrator": {
+      "command": "node",
+      "args": [
+        "../../mcp/playwright-orchestrator/dist/index.js"
+      ],
+      "description": "MCP server for orchestrating Playwright E2E tests with feature tagging and result correlation",
+      "enabled": true,
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "docs-reader": {
+      "command": "node",
+      "args": [
+        "../../mcp/docs/dist/index.js"
+      ],
+      "description": "MCP server for reading and searching project documentation (stub for future expansion)",
+      "enabled": false,
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "note": "This is a stub MCP server. Enable it after implementing full docs reading capabilities or use document-skills plugin instead."
+    }
+  },
+  "configuration": {
+    "playwright-orchestrator": {
+      "defaultTimeout": 30000,
+      "retries": 2,
+      "workers": 4
+    }
+  }
+}

@@ -1,0 +1,301 @@
+# Feature Orchestrator Configuration Example
+#
+# Copy this file to your project root as:
+#   .claude/feature-orchestrator.yml
+#
+# Then customize the values for your project.
+
+# ==============================================================================
+# TEST CONFIGURATION
+# ==============================================================================
+# Configure test runners and commands for different test types
+
+tests:
+  # E2E (End-to-End) Tests
+  e2e:
+    # Test runner: playwright | cypress | selenium | custom
+    runner: playwright
+
+    # Command to run E2E tests
+    # The orchestrator will append tag filters to this command
+    command: "npx playwright test"
+
+    # Flag used for filtering tests by tag (e.g., --grep, --spec, --filter)
+    tag_flag: "--grep"
+
+    # Directory where E2E tests are located
+    test_directory: "tests/e2e"
+
+    # Additional options (optional)
+    # timeout: 30000
+    # retries: 2
+    # workers: 4
+
+  # Unit Tests
+  unit:
+    # Test runner: vitest | jest | pytest | go | custom
+    runner: vitest
+
+    # Command to run unit tests
+    command: "npm run test:unit"
+
+    # Directory where unit tests are located (optional)
+    # test_directory: "src/**/*.test.ts"
+
+  # Integration Tests
+  integration:
+    # Test runner: vitest | jest | pytest | go | custom
+    runner: vitest
+
+    # Command to run integration tests
+    command: "npm run test:integration"
+
+    # Directory where integration tests are located (optional)
+    # test_directory: "tests/integration"
+
+# ==============================================================================
+# DOCUMENTATION CONFIGURATION
+# ==============================================================================
+# Specify where the orchestrator should look for project documentation
+
+docs:
+  # Paths to search for documentation (relative to project root)
+  paths:
+    - /docs
+    - /specs
+    - /design
+    - /architecture
+
+  # Specific guideline documents (optional but recommended)
+  # These will be prioritized when searching for requirements
+  guidelines:
+    security: /docs/security-guidelines.md
+    api: /docs/api-standards.md
+    ui: /docs/ui-guidelines.md
+    accessibility: /docs/accessibility.md
+    testing: /docs/testing-standards.md
+
+  # File types to include when searching docs
+  file_types:
+    - md
+    - txt
+    # - pdf  # Requires document-skills plugin or custom docs MCP
+
+# ==============================================================================
+# ENVIRONMENT CONFIGURATION
+# ==============================================================================
+# Default environment settings for feature development and testing
+
+default_feature_env:
+  # Base URL for E2E tests
+  base_url: "http://localhost:3000"
+
+  # API base URL (if separate from frontend)
+  api_base_url: "http://localhost:8000"
+
+  # Test user credentials (for E2E tests)
+  test_user_email: "test@example.com"
+  test_user_password: "password123"
+
+  # Database connection for tests (optional)
+  # test_database_url: "postgresql://localhost:5432/myapp_test"
+
+  # Additional environment variables (optional)
+  # env:
+  #   NODE_ENV: "test"
+  #   DEBUG: "false"
+
+# ==============================================================================
+# BEHAVIOR CONFIGURATION
+# ==============================================================================
+# Control how the feature orchestrator behaves
+
+behavior:
+  # Auto-approve the implementation plan (skip review step)
+  # Default: false (user must review and approve)
+  auto_approve_plan: false
+
+  # Auto-approve the specification (skip review step)
+  # Default: false (user must review and approve)
+  auto_approve_spec: false
+
+  # Automatically create a feature branch before starting implementation
+  # Default: true
+  create_branch: true
+
+  # Branch naming template
+  # Variables: {feature-id}, {feature-name}, {timestamp}
+  branch_name_template: "feature/{feature-name}"
+
+  # Enable workflow hooks (suggestions, automation triggers)
+  # Default: true
+  enable_hooks: true
+
+  # Maximum number of feedback loop iterations
+  # If tests keep failing after this many iterations, pause for manual review
+  # Default: 5
+  max_iterations: 5
+
+  # Auto-commit changes after successful implementation
+  # Default: false (let user review changes first)
+  auto_commit: false
+
+  # Commit message template
+  # Variables: {feature-title}, {feature-id}, {checklist-summary}
+  commit_message_template: |
+    feat: {feature-title}
+
+    {checklist-summary}
+
+    🤖 Generated with Feature Orchestrator
+    Feature ID: {feature-id}
+
+# ==============================================================================
+# AGENT CONFIGURATION
+# ==============================================================================
+# Fine-tune behavior of individual agents (optional)
+
+agents:
+  # Spec Writer Agent
+  spec_writer:
+    # Detail level: brief | standard | comprehensive
+    detail_level: standard
+
+    # Include non-functional requirements by default
+    include_nfr: true
+
+    # Default priority if not specified
+    default_priority: P1
+
+  # Planner Agent
+  planner:
+    # Complexity estimation: simple | detailed | skip
+    complexity_estimation: detailed
+
+    # Include risk assessment in plan
+    include_risk_assessment: true
+
+  # Backend Dev Agent
+  backend_dev:
+    # Code style: match-existing | explicit-types | minimal
+    code_style: match-existing
+
+    # Test coverage requirement (percentage)
+    min_test_coverage: 80
+
+  # Frontend Dev Agent
+  frontend_dev:
+    # Code style: match-existing | explicit-types | minimal
+    code_style: match-existing
+
+    # Always add accessibility attributes
+    enforce_accessibility: true
+
+    # Always add test IDs for E2E tests
+    add_test_ids: true
+
+  # Playwright Tester Agent
+  playwright_tester:
+    # Screenshot on failure
+    screenshot_on_failure: true
+
+    # Generate trace on failure (for debugging)
+    trace_on_failure: true
+
+    # Automatically retry flaky tests
+    retry_flaky_tests: true
+
+    # Max retries for flaky tests
+    max_retries: 3
+
+# ==============================================================================
+# NOTIFICATION CONFIGURATION (Optional)
+# ==============================================================================
+# Get notified when long-running operations complete
+
+notifications:
+  # Enable notifications
+  enabled: false
+
+  # Notification method: slack | email | webhook | none
+  method: none
+
+  # Slack webhook URL (if method: slack)
+  # slack_webhook_url: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+
+  # Email settings (if method: email)
+  # email:
+  #   to: "dev@example.com"
+  #   smtp_server: "smtp.example.com"
+  #   smtp_port: 587
+
+  # Webhook URL (if method: webhook)
+  # webhook_url: "https://your-server.com/webhook"
+
+  # Which events trigger notifications
+  notify_on:
+    - implementation_complete
+    - tests_passing
+    - tests_failing
+    - max_iterations_reached
+
+# ==============================================================================
+# ADVANCED CONFIGURATION (Optional)
+# ==============================================================================
+
+advanced:
+  # Custom MCP server configurations (overrides plugin defaults)
+  # mcp:
+  #   playwright_orchestrator:
+  #     timeout: 60000
+  #     retries: 3
+
+  # Cache duration for documentation search results (in minutes)
+  # docs_cache_ttl: 60
+
+  # Parallel execution: run backend, frontend, infra agents in parallel
+  parallel_implementation: true
+
+  # Verbose logging for debugging
+  verbose_logging: false
+
+  # Save intermediate artifacts (plans, specs) even if implementation fails
+  save_intermediate_artifacts: true
+
+# ==============================================================================
+# PROJECT METADATA (Optional)
+# ==============================================================================
+# Information about your project for better context
+
+project:
+  # Project name
+  name: "My Awesome App"
+
+  # Primary tech stack (helps with detection)
+  tech_stack:
+    backend: "Node.js + Express"
+    frontend: "React + Next.js"
+    database: "PostgreSQL + Prisma"
+    testing: "Playwright + Vitest"
+
+  # Team information
+  team:
+    # Primary code reviewers
+    reviewers:
+      - "alice@example.com"
+      - "bob@example.com"
+
+    # Team conventions
+    conventions:
+      - "Use TypeScript strict mode"
+      - "Follow Airbnb style guide"
+      - "Write tests for all business logic"
+
+# ==============================================================================
+# NOTES
+# ==============================================================================
+# - All paths are relative to the project root
+# - Boolean values: true | false (lowercase)
+# - Commands are executed in the project root directory
+# - Environment variables in commands are supported: ${VAR_NAME}
+# - See plugin documentation for more advanced options

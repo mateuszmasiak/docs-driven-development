@@ -1,0 +1,130 @@
+{
+  "hooks": [
+    {
+      "name": "suggest-feature-orchestrator",
+      "type": "on-user-message",
+      "description": "Suggests using /feature-orchestrator when user describes a feature request",
+      "enabled": true,
+      "condition": {
+        "pattern": "(?i)(add|implement|create|build).*(feature|functionality|capability|ability|flow|workflow)",
+        "minConfidence": 0.7
+      },
+      "action": {
+        "type": "suggest-command",
+        "command": "/feature-orchestrator",
+        "message": "It looks like you're describing a new feature. Would you like me to use /feature-orchestrator to guide you through a structured implementation with specs, tests, and verification?"
+      },
+      "config": {
+        "maxSuggestionsPerSession": 2,
+        "cooldownMinutes": 30
+      }
+    },
+    {
+      "name": "before-large-change",
+      "type": "manual",
+      "description": "Manually trigger feature orchestrator before starting a large change",
+      "enabled": true,
+      "trigger": "user runs /feature-orchestrator",
+      "action": {
+        "type": "run-agent",
+        "agent": "feature-orchestrator"
+      }
+    },
+    {
+      "name": "verify-feature-tests",
+      "type": "on-code-change",
+      "description": "Offers to re-run feature tests when code in an active feature is modified",
+      "enabled": false,
+      "condition": {
+        "detectActiveFeature": true,
+        "filePatternChanged": "src/**/*.{ts,tsx,js,jsx,py,go,rb,cs}"
+      },
+      "action": {
+        "type": "suggest-command",
+        "command": "/test-feature",
+        "message": "Code changed in active feature {{featureId}}. Would you like to re-run tests to verify acceptance criteria?"
+      },
+      "config": {
+        "debounceSeconds": 10,
+        "maxSuggestionsPerFeature": 5
+      }
+    },
+    {
+      "name": "feature-completion-checklist",
+      "type": "manual",
+      "description": "Shows completion checklist before marking feature as done",
+      "enabled": true,
+      "trigger": "user indicates feature is complete",
+      "action": {
+        "type": "show-checklist",
+        "checklistItems": [
+          {
+            "id": "all-tests-passing",
+            "text": "All acceptance criteria tests are passing",
+            "verifyCommand": "check-test-results"
+          },
+          {
+            "id": "no-console-errors",
+            "text": "No console errors or warnings in browser",
+            "verifyCommand": null
+          },
+          {
+            "id": "responsive-tested",
+            "text": "Feature tested on mobile viewport",
+            "verifyCommand": null
+          },
+          {
+            "id": "accessibility-checked",
+            "text": "Feature tested with keyboard navigation",
+            "verifyCommand": null
+          },
+          {
+            "id": "docs-updated",
+            "text": "Documentation updated if needed",
+            "verifyCommand": null
+          },
+          {
+            "id": "pr-created",
+            "text": "Pull request created with proper description",
+            "verifyCommand": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "detect-missing-tests",
+      "type": "on-agent-complete",
+      "description": "Warns if implementation tasks complete without sufficient test coverage",
+      "enabled": true,
+      "condition": {
+        "agent": "backend-dev|frontend-dev|infra-dev",
+        "checkCoverage": true
+      },
+      "action": {
+        "type": "warn",
+        "message": "{{agentName}} completed implementation but test coverage is below threshold. Consider adding more tests before proceeding."
+      },
+      "config": {
+        "minimumCoveragePercent": 80
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "pluginName": "@feature-orchestrator/plugin",
+    "description": "Hooks for feature orchestrator workflow suggestions and automation",
+    "lastUpdated": "2025-01-04"
+  },
+  "configuration": {
+    "enableAllHooks": true,
+    "debugMode": false,
+    "logHookTriggers": false
+  },
+  "notes": [
+    "Hooks enhance the orchestrator workflow by providing timely suggestions",
+    "The 'suggest-feature-orchestrator' hook is the primary user-facing hook",
+    "Other hooks are optional and can be enabled based on team preferences",
+    "Hooks respect user preferences and won't be overly intrusive",
+    "Manual hooks require explicit user action to trigger"
+  ]
+}
