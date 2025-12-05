@@ -1,5 +1,16 @@
 {
   "mcpServers": {
+    "feature-orchestrator": {
+      "command": "node",
+      "args": [
+        "../../mcp/feature-orchestrator/dist/index.js"
+      ],
+      "description": "Main MCP server for Feature Orchestrator - workspace, state, and artifact management",
+      "enabled": true,
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
     "playwright-orchestrator": {
       "command": "node",
       "args": [
@@ -16,15 +27,18 @@
       "args": [
         "../../mcp/docs/dist/index.js"
       ],
-      "description": "MCP server for reading and searching project documentation (stub for future expansion)",
-      "enabled": false,
+      "description": "MCP server for reading and searching project documentation",
+      "enabled": true,
       "env": {
         "NODE_ENV": "production"
-      },
-      "note": "This is a stub MCP server. Enable it after implementing full docs reading capabilities or use document-skills plugin instead."
+      }
     }
   },
   "configuration": {
+    "feature-orchestrator": {
+      "maxIterations": 5,
+      "workspacesDir": ".claude/feature-dev"
+    },
     "playwright-orchestrator": {
       "defaultTimeout": 30000,
       "retries": 2,

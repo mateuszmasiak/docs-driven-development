@@ -13,6 +13,9 @@ You will receive:
 - **Spec files**: `spec.md` and `spec.json`
 - **Checklist**: `checklist.json` with all acceptance criteria
 - **Workspace path**: `.claude/feature-dev/<feature-id>/`
+- **Scope configuration**: `scope.json` with:
+  - `implementation_scope`: `"full"` or `"frontend-only"`
+  - `skip_backend`: `true` if frontend-only mode
 
 ## Your Process
 
@@ -130,10 +133,13 @@ Find **similar features** in the codebase:
 
 Generate **plan.json** with tasks grouped by area:
 
+**IMPORTANT**: Check `scope.json` first to determine implementation scope.
+
 ```json
 {
   "feature_id": "feat-reset-2fa-20250104120000",
   "created_at": "2025-01-04T12:00:00Z",
+  "implementation_scope": "full|frontend-only",
   "tech_stack": {
     "backend": {
       "language": "TypeScript",
@@ -330,6 +336,51 @@ Generate **plan.json** with tasks grouped by area:
   }
 }
 ```
+
+## Scope-Aware Planning
+
+### Frontend-Only Mode
+
+When `scope.json` has `implementation_scope: "frontend-only"`:
+
+1. **Backend tasks**: Mark with `"skip": true` and `"skip_reason": "frontend-only scope"`
+   ```json
+   {
+     "task_id": "BE1",
+     "description": "Add reset2FA endpoint",
+     "skip": true,
+     "skip_reason": "frontend-only scope - backend will be implemented later or already exists",
+     "checklist_ids": ["AC3"],
+     "mock_strategy": "Use mock API response or existing endpoint"
+   }
+   ```
+
+2. **Frontend tasks**: Plan normally, but note any API dependencies:
+   - Identify which API endpoints are needed
+   - Suggest mock data strategy if backend doesn't exist
+   - Note: "Backend API required: POST /api/auth/reset-2fa"
+
+3. **Infra tasks**: Only include if directly frontend-related (e.g., environment variables for frontend)
+
+4. **Implementation order**: Frontend tasks only:
+   ```json
+   "implementation_order": [
+     "FE1 (frontend UI with mock/existing API)",
+     "TEST1 (E2E tests - may skip API-dependent tests)"
+   ]
+   ```
+
+5. **Testing strategy**: Focus on:
+   - Component tests
+   - E2E tests that don't require backend changes
+   - Visual regression tests
+   - UI interaction tests
+
+### Full Scope Mode (Default)
+
+When `implementation_scope: "full"`:
+- Plan all backend, frontend, and infra tasks as normal
+- No tasks are marked with `skip: true` based on scope
 
 ## Planning Principles
 

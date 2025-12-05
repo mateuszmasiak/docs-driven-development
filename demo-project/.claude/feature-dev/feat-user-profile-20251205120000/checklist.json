@@ -1,0 +1,46 @@
+{
+  "feature_id": "feat-user-profile-20251205120000",
+  "checklist": [
+    {
+      "id": "AC1",
+      "text": "User can navigate to profile page from main menu",
+      "source": "spec",
+      "priority": "P0",
+      "verification_hint": "E2E",
+      "tags": ["feat-user-profile-20251205120000", "AC1"]
+    },
+    {
+      "id": "AC2",
+      "text": "Profile page displays user name, email, and bio",
+      "source": "spec",
+      "priority": "P0",
+      "verification_hint": "E2E",
+      "tags": ["feat-user-profile-20251205120000", "AC2"]
+    },
+    {
+      "id": "AC3",
+      "text": "User can edit profile fields inline",
+      "source": "spec",
+      "priority": "P1",
+      "verification_hint": "E2E",
+      "tags": ["feat-user-profile-20251205120000", "AC3"]
+    },
+    {
+      "id": "AC4",
+      "text": "User can upload profile picture",
+      "source": "spec",
+      "priority": "P1",
+      "verification_hint": "E2E",
+      "tags": ["feat-user-profile-20251205120000", "AC4"]
+    },
+    {
+      "id": "AC5",
+      "text": "Changes are saved via API call",
+      "source": "spec",
+      "priority": "P0",
+      "verification_hint": "integration",
+      "tags": ["feat-user-profile-20251205120000", "AC5"],
+      "note": "Requires backend API - may use mock in frontend-only mode"
+    }
+  ]
+}

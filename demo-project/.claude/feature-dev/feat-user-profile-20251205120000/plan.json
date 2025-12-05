@@ -1,0 +1,242 @@
+{
+  "feature_id": "feat-user-profile-20251205120000",
+  "created_at": "2025-12-05T12:00:00Z",
+  "implementation_scope": "frontend-only",
+  "tech_stack": {
+    "backend": {
+      "language": "TypeScript",
+      "framework": "Express",
+      "patterns": ["controller-service"]
+    },
+    "frontend": {
+      "language": "TypeScript",
+      "framework": "React",
+      "meta_framework": "Next.js",
+      "patterns": ["pages-router", "components"]
+    }
+  },
+  "test_frameworks": {
+    "e2e": {
+      "name": "playwright",
+      "config": "playwright.config.ts",
+      "command": "npx playwright test",
+      "test_directory": "tests/e2e",
+      "tag_flag": "--grep"
+    },
+    "unit": {
+      "name": "vitest",
+      "config": "vitest.config.ts",
+      "command": "npm run test:unit"
+    }
+  },
+  "areas": {
+    "backend": {
+      "tasks": [
+        {
+          "task_id": "BE1",
+          "description": "Add GET /api/user/profile endpoint",
+          "skip": true,
+          "skip_reason": "frontend-only scope - backend will be implemented later",
+          "checklist_ids": ["AC2", "AC5"],
+          "mock_strategy": "Use mock data in frontend or existing endpoint if available"
+        },
+        {
+          "task_id": "BE2",
+          "description": "Add PUT /api/user/profile endpoint",
+          "skip": true,
+          "skip_reason": "frontend-only scope - backend will be implemented later",
+          "checklist_ids": ["AC3", "AC5"],
+          "mock_strategy": "Frontend can mock successful save response"
+        },
+        {
+          "task_id": "BE3",
+          "description": "Add POST /api/user/profile/avatar endpoint",
+          "skip": true,
+          "skip_reason": "frontend-only scope - backend will be implemented later",
+          "checklist_ids": ["AC4", "AC5"],
+          "mock_strategy": "Frontend can display preview without actual upload"
+        }
+      ]
+    },
+    "frontend": {
+      "tasks": [
+        {
+          "task_id": "FE1",
+          "description": "Add profile page route and navigation link",
+          "rationale": "Create the profile page and add navigation link in main menu",
+          "files_to_create": [
+            "src/pages/profile.tsx"
+          ],
+          "files_to_modify": [
+            "src/components/Navigation.tsx"
+          ],
+          "checklist_ids": ["AC1"],
+          "estimated_complexity": "low",
+          "dependencies": [],
+          "implementation_notes": [
+            "Create new page at /profile route",
+            "Add 'Profile' link to main navigation menu",
+            "Follow existing page structure patterns"
+          ],
+          "api_dependencies": []
+        },
+        {
+          "task_id": "FE2",
+          "description": "Create ProfileDisplay component showing user info",
+          "rationale": "Display user name, email, and bio",
+          "files_to_create": [
+            "src/components/ProfileDisplay.tsx"
+          ],
+          "checklist_ids": ["AC2"],
+          "estimated_complexity": "medium",
+          "dependencies": ["FE1"],
+          "implementation_notes": [
+            "Display user name, email, bio in a clean layout",
+            "Use mock data initially (will connect to API later)",
+            "Add loading and error states",
+            "Follow existing component patterns"
+          ],
+          "api_dependencies": [
+            {
+              "endpoint": "GET /api/user/profile",
+              "note": "SKIPPED - using mock data for now"
+            }
+          ],
+          "mock_data": {
+            "name": "John Doe",
+            "email": "john@example.com",
+            "bio": "Software developer passionate about clean code"
+          }
+        },
+        {
+          "task_id": "FE3",
+          "description": "Add inline editing for profile fields",
+          "rationale": "Allow users to edit their profile information",
+          "files_to_modify": [
+            "src/components/ProfileDisplay.tsx"
+          ],
+          "files_to_create": [
+            "src/components/EditableField.tsx"
+          ],
+          "checklist_ids": ["AC3"],
+          "estimated_complexity": "medium",
+          "dependencies": ["FE2"],
+          "implementation_notes": [
+            "Create EditableField component with edit/view modes",
+            "Add form validation for fields",
+            "Save button triggers API call (mock for now)",
+            "Show success/error feedback"
+          ],
+          "api_dependencies": [
+            {
+              "endpoint": "PUT /api/user/profile",
+              "note": "SKIPPED - mock successful response"
+            }
+          ]
+        },
+        {
+          "task_id": "FE4",
+          "description": "Add profile picture upload UI",
+          "rationale": "Allow users to upload/change profile picture",
+          "files_to_create": [
+            "src/components/AvatarUpload.tsx"
+          ],
+          "files_to_modify": [
+            "src/components/ProfileDisplay.tsx"
+          ],
+          "checklist_ids": ["AC4"],
+          "estimated_complexity": "medium",
+          "dependencies": ["FE2"],
+          "implementation_notes": [
+            "Create avatar upload component with preview",
+            "Support drag-and-drop and click-to-upload",
+            "Validate file type and size",
+            "Show preview before 'upload' (mock upload for now)"
+          ],
+          "api_dependencies": [
+            {
+              "endpoint": "POST /api/user/profile/avatar",
+              "note": "SKIPPED - show preview only, no actual upload"
+            }
+          ]
+        }
+      ]
+    },
+    "infra": {
+      "tasks": []
+    },
+    "tests": {
+      "tasks": [
+        {
+          "task_id": "TEST1",
+          "description": "E2E tests for profile page navigation and display",
+          "rationale": "Test navigation and profile display without backend dependency",
+          "files_to_create": [
+            "tests/e2e/profile.spec.ts"
+          ],
+          "checklist_ids": ["AC1", "AC2"],
+          "estimated_complexity": "low",
+          "dependencies": ["FE2"],
+          "implementation_notes": [
+            "Test navigation to profile page works",
+            "Test profile information displays correctly",
+            "Use mock data, no backend required"
+          ]
+        },
+        {
+          "task_id": "TEST2",
+          "description": "E2E tests for profile editing UI",
+          "rationale": "Test editing functionality (UI only, mock API)",
+          "files_to_create": [],
+          "files_to_modify": [
+            "tests/e2e/profile.spec.ts"
+          ],
+          "checklist_ids": ["AC3", "AC4"],
+          "estimated_complexity": "medium",
+          "dependencies": ["FE3", "FE4"],
+          "implementation_notes": [
+            "Test edit mode toggle",
+            "Test form validation",
+            "Test avatar preview",
+            "Mock API responses for save operations"
+          ]
+        }
+      ]
+    }
+  },
+  "dependencies_map": {
+    "FE1": [],
+    "FE2": ["FE1"],
+    "FE3": ["FE2"],
+    "FE4": ["FE2"],
+    "TEST1": ["FE2"],
+    "TEST2": ["FE3", "FE4"]
+  },
+  "recommendations": {
+    "implementation_order": [
+      "FE1 (page route and navigation)",
+      "FE2 (profile display with mock data)",
+      "FE3 (inline editing UI)",
+      "FE4 (avatar upload UI)",
+      "TEST1 (E2E for display)",
+      "TEST2 (E2E for editing)"
+    ],
+    "testing_strategy": "Focus on UI/component tests. E2E tests use mock data. Backend integration tests will be added when backend is implemented.",
+    "frontend_only_notes": [
+      "All API calls will use mock responses",
+      "Avatar upload shows preview only, no actual file upload",
+      "Profile data is static mock data until backend is ready",
+      "Ready to connect to real API when backend is implemented"
+    ]
+  },
+  "skipped_backend_summary": {
+    "total_backend_tasks": 3,
+    "skipped": 3,
+    "reason": "frontend-only scope selected by user",
+    "apis_to_implement_later": [
+      "GET /api/user/profile",
+      "PUT /api/user/profile",
+      "POST /api/user/profile/avatar"
+    ]
+  }
+}

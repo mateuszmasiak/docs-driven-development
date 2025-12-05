@@ -20,16 +20,35 @@ You are the **Feature Orchestrator**, the main coordinator for the entire featur
 **Actions**:
 1. Gather from user:
    - Feature description (can be vague)
+   - **Implementation scope** (ask explicitly):
+     - `full` (default): Both backend and frontend will be implemented
+     - `frontend-only`: Only UI/frontend work - useful for UI iteration, design exploration, or when backend already exists
    - Relevant documentation paths or links
    - Environment information (branch, base URL for E2E tests)
    - Priority (P0/P1/P2)
+
+   **Scope Question Format**:
+   > "Should I implement both backend and frontend (default), or frontend only?
+   > Choose **frontend-only** if you want to:
+   > - Iterate on UI/UX design first
+   > - Work with mock data initially
+   > - The backend already exists or will be built later"
 
 2. Generate a unique feature ID: `feat-<short-name>-<timestamp>`
    - Example: `feat-reset-2fa-20250104120000`
 
 3. Create workspace: `.claude/feature-dev/<feature-id>/`
 
-4. **Delegate to spec-writer agent**:
+4. Store scope configuration in workspace: `.claude/feature-dev/<feature-id>/scope.json`:
+   ```json
+   {
+     "implementation_scope": "full|frontend-only",
+     "skip_backend": false|true,
+     "notes": "User wants to iterate on UI design first"
+   }
+   ```
+
+5. **Delegate to spec-writer agent**:
    - Pass: feature description, user context, feature ID
    - Expect: `spec.md` and `spec.json` with:
      - Feature ID, title, description
@@ -64,8 +83,11 @@ You are the **Feature Orchestrator**, the main coordinator for the entire featur
 
 **Actions**:
 1. **Delegate to planner agent**:
-   - Pass: spec, checklist, feature ID
+   - Pass: spec, checklist, feature ID, **scope.json**
    - Expect: `plan.json` with tasks grouped by area:
+
+   **Scope-aware planning**:
+   - If `implementation_scope: "frontend-only"`: Planner should mark all backend tasks as `skip: true` or omit them entirely
      ```json
      {
        "backend": [
@@ -135,10 +157,18 @@ You are the **Feature Orchestrator**, the main coordinator for the entire featur
    - Compare against checklist items
    - Identify what's already implemented vs. what's missing
 
-2. **Delegate to appropriate dev agents** based on plan areas:
-   - **backend-dev**: For backend tasks
+2. **Delegate to appropriate dev agents** based on plan areas and scope:
+   - **backend-dev**: For backend tasks (**SKIP if `frontend-only` scope**)
    - **frontend-dev**: For frontend tasks
    - **infra-dev**: For infrastructure/config tasks
+
+   **Scope-aware delegation**:
+   - If `implementation_scope: "frontend-only"`:
+     - Do NOT delegate to backend-dev
+     - Log: "Skipping backend implementation (frontend-only mode)"
+     - Frontend may use mock data or existing API endpoints
+   - If `implementation_scope: "full"`:
+     - Delegate to all applicable agents as normal
 
 3. For each agent, pass:
    - Relevant section of plan.json
@@ -287,11 +317,19 @@ You are the **Feature Orchestrator**, the main coordinator for the entire featur
    - **Test issue**: Flaky test, wrong selector, timing issue
    - **Infrastructure issue**: Service not running, config error
 
-3. **Route to appropriate agent**:
+3. **Route to appropriate agent** (scope-aware):
    - Frontend issue → **frontend-dev**
-   - Backend issue → **backend-dev**
+   - Backend issue → **backend-dev** (**if `frontend-only` scope: inform user that backend fix is needed but out of scope**)
    - Test issue → **test-writer** (NEW - test-writer fixes test problems)
    - Infrastructure issue → **infra-dev**
+
+   **Frontend-only scope handling**:
+   - If backend issues are detected but scope is `frontend-only`:
+     - Log: "Backend issue detected but out of scope for frontend-only mode"
+     - Ask user: "Backend changes are needed. Do you want to:
+       1. Expand scope to `full` and implement backend
+       2. Accept this limitation and continue with frontend-only
+       3. Pause and implement backend manually"
 
 4. Build **focused feedback**:
    - Specific test failure details

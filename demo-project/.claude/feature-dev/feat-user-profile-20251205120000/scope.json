@@ -1,0 +1,5 @@
+{
+  "implementation_scope": "frontend-only",
+  "skip_backend": true,
+  "notes": "User wants to iterate on UI design first before implementing backend API"
+}
